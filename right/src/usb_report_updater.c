@@ -196,8 +196,6 @@ static void applyKeystrokeSecondary(key_state_t *keyState, key_action_t *action,
 
 static void applyKeystroke(key_state_t *keyState, key_action_t *action, key_action_t *actionBase)
 {
-    LedDisplay_IncreaseAPMCount();
-
     if (action->keystroke.secondaryRole) {
         switch (SecondaryRoles_ResolveState(keyState)) {
             case SecondaryRoleState_Primary:
@@ -253,6 +251,10 @@ static void applyKeyAction(key_state_t *keyState, key_action_t *action, key_acti
 
 static void commitKeyState(key_state_t *keyState, bool active)
 {
+    if (active == true) {
+      LedDisplay_IncreaseAPMCount();
+    }
+
     if (PostponerCore_IsActive()) {
         PostponerCore_TrackKeyEvent(keyState, active);
     } else {

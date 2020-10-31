@@ -8,8 +8,8 @@ uint8_t AlphanumericSegmentsBrightness = 0xff;
 bool ledIconStates[LedDisplayIcon_Count];
 char LedDisplay_DebugString[] = "   ";
 
-uint16_t LedDisplay_APMCount = 3;
-char LedDisplay_APMString[] = "000";
+uint16_t LedDisplay_APMCount = 0;
+char LedDisplay_APMString[] = "   ";
 
 static const uint16_t letterToSegmentMap[] = {
     0b00000000000000, // space
