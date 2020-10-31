@@ -27,6 +27,8 @@
     extern uint8_t IconsAndLayerTextsBrightness;
     extern uint8_t AlphanumericSegmentsBrightness;
     extern char LedDisplay_DebugString[];
+    extern uint16_t LedDisplay_APMCount;
+    extern char LedDisplay_APMString[];
 
 // Functions:
 

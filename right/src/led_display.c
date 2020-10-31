@@ -8,6 +8,9 @@ uint8_t AlphanumericSegmentsBrightness = 0xff;
 bool ledIconStates[LedDisplayIcon_Count];
 char LedDisplay_DebugString[] = "   ";
 
+uint16_t LedDisplay_APMCount = 3;
+char LedDisplay_APMString[] = "000";
+
 static const uint16_t letterToSegmentMap[] = {
     0b00000000000000, // space
     0b00000000000000, // !
@@ -157,11 +160,17 @@ void LedDisplay_UpdateIcons(void)
 void LedDisplay_UpdateText(void)
 {
 #if LED_DISPLAY_DEBUG_MODE == 0
-    keymap_reference_t *currentKeymap = AllKeymaps + CurrentKeymapIndex;
-    LedDisplay_SetText(currentKeymap->abbreviationLen, currentKeymap->abbreviation);
+    // Display APM counter instead of current profile
+    sprintf(LedDisplay_APMString, "%d", LedDisplay_APMCount);
+    LedDisplay_SetText(strlen(LedDisplay_APMString), LedDisplay_APMString);
 #else
     LedDisplay_SetText(strlen(LedDisplay_DebugString), LedDisplay_DebugString);
 #endif
+}
+
+void LedDisplay_IncreaseAPMCount(void) {
+  LedDisplay_APMCount = (LedDisplay_APMCount + 1) % 1000;
+  LedDisplay_UpdateText();
 }
 
 void LedDisplay_UpdateAll(void)

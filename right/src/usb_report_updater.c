@@ -196,6 +196,8 @@ static void applyKeystrokeSecondary(key_state_t *keyState, key_action_t *action,
 
 static void applyKeystroke(key_state_t *keyState, key_action_t *action, key_action_t *actionBase)
 {
+    LedDisplay_IncreaseAPMCount();
+
     if (action->keystroke.secondaryRole) {
         switch (SecondaryRoles_ResolveState(keyState)) {
             case SecondaryRoleState_Primary:
