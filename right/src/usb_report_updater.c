@@ -389,6 +389,9 @@ void UpdateUsbReports(void)
 {
     static uint32_t lastUpdateTime;
 
+    LedDisplay_RemoveExpiredKeystrokeTimestamps();
+    LedDisplay_UpdateText();
+
     for (uint8_t keyId = 0; keyId < RIGHT_KEY_MATRIX_KEY_COUNT; keyId++) {
         KeyStates[SlotId_RightKeyboardHalf][keyId].hardwareSwitchState = RightKeyMatrix.keyStates[keyId];
     }

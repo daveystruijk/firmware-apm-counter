@@ -2,14 +2,19 @@
 #include "slave_drivers/is31fl37xx_driver.h"
 #include "layer.h"
 #include "keymap.h"
+#include "timer.h"
 
 uint8_t IconsAndLayerTextsBrightness = 0xff;
 uint8_t AlphanumericSegmentsBrightness = 0xff;
 bool ledIconStates[LedDisplayIcon_Count];
 char LedDisplay_DebugString[] = "   ";
-
-uint16_t LedDisplay_APMCount = 0;
 char LedDisplay_APMString[] = "   ";
+
+#define KEYSTROKE_BUFFER_SIZE 1000
+uint32_t keystrokeTimestamps[KEYSTROKE_BUFFER_SIZE];
+uint16_t keystrokeTimestampsIndex = 0;
+uint16_t keystrokeTimestampsSize = 0;
+#define POS(idx) ((keystrokeTimestampsIndex + (idx)) % KEYSTROKE_BUFFER_SIZE)
 
 static const uint16_t letterToSegmentMap[] = {
     0b00000000000000, // space
@@ -161,7 +166,7 @@ void LedDisplay_UpdateText(void)
 {
 #if LED_DISPLAY_DEBUG_MODE == 0
     // Display APM counter instead of current profile
-    sprintf(LedDisplay_APMString, "%d", LedDisplay_APMCount);
+    sprintf(LedDisplay_APMString, "%d", keystrokeTimestampsSize * 8);
     LedDisplay_SetText(strlen(LedDisplay_APMString), LedDisplay_APMString);
 #else
     LedDisplay_SetText(strlen(LedDisplay_DebugString), LedDisplay_DebugString);
@@ -169,8 +174,30 @@ void LedDisplay_UpdateText(void)
 }
 
 void LedDisplay_IncreaseAPMCount(void) {
-  LedDisplay_APMCount = (LedDisplay_APMCount + 1) % 1000;
-  LedDisplay_UpdateText();
+  LedDisplay_AddKeystrokeTimestamp();
+  LedDisplay_RemoveExpiredKeystrokeTimestamps();
+}
+
+void LedDisplay_AddKeystrokeTimestamp(void) {
+  if (keystrokeTimestampsSize >= KEYSTROKE_BUFFER_SIZE) { return; }
+  uint16_t pos = POS(keystrokeTimestampsSize);
+  keystrokeTimestamps[pos] = CurrentTime;
+  keystrokeTimestampsSize++;
+}
+
+void LedDisplay_RemoveExpiredKeystrokeTimestamps(void) {
+  while (true) {
+    uint32_t timestamp = keystrokeTimestamps[keystrokeTimestampsIndex];
+    if (keystrokeTimestampsSize <= 0) {
+      break;
+    }
+    if (timestamp > CurrentTime - 7500) {  // if within 7.5s
+      break;
+    } else {
+      keystrokeTimestampsIndex = (keystrokeTimestampsIndex + 1) % KEYSTROKE_BUFFER_SIZE;
+      keystrokeTimestampsSize--;
+    }
+  }
 }
 
 void LedDisplay_UpdateAll(void)

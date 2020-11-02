@@ -27,8 +27,10 @@
     extern uint8_t IconsAndLayerTextsBrightness;
     extern uint8_t AlphanumericSegmentsBrightness;
     extern char LedDisplay_DebugString[];
-    extern uint16_t LedDisplay_APMCount;
     extern char LedDisplay_APMString[];
+    extern uint32_t keystrokeTimestamps[];
+    extern uint16_t keystrokeTimestampsIndex;
+    extern uint16_t keystrokeTimestampsSize;
 
 // Functions:
 
@@ -39,5 +41,8 @@
     void LedDisplay_UpdateIcons(void);
     void LedDisplay_UpdateText(void);
     void LedDisplay_UpdateAll(void);
+    void LedDisplay_IncreaseAPMCount(void);
+    void LedDisplay_AddKeystrokeTimestamp(void);
+    void LedDisplay_RemoveExpiredKeystrokeTimestamps(void);
 
 #endif
